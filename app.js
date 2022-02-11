@@ -133,7 +133,9 @@ app.get("/:id", (req, res) => {
 
 app.get("/:id/edit", (req, res) => {
     Nota.findOne({_id: req.params.id}).lean().then((nota) => {
-        res.render("admin/editnota", {nota: nota})
+        Categoria.find().lean().then((categorias) => {
+            res.render("admin/editnota", {nota: nota, categorias: categorias})
+        })
     }).catch((err) => {
         req.flash("error_msg", "essa nota não existe")
         res.redirect("/")
