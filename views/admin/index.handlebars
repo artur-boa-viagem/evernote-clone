@@ -1,0 +1,26 @@
+<div class="bg-light p-5 rounded-lg m-3">
+  <h1 class="display-4">Bem-vindo ao Evernote Clone</h1>
+  <p class="lead">Este é um simples site, desenvolvido com NodeJs + Express + MongoDB, que tem o intuito de simular o site "Evernote".</p>
+</div>
+
+{{#each notas}}
+    <div class = "card mt-4">
+        <div class = "card-body">
+            <h4>{{titulo}}</h4>
+            <hr>
+            <small>Categoria: {{categoria}}</small>
+            <br>
+            <small>Data: {{data}}</small>
+            <br>
+            <a href="/{{_id}}"><button class = "btn btn-success mt-3">Visualizar nota</button></a>
+            <a href="/{{_id}}/edit"><button class = "btn btn-success mt-3">Editar nota</button></a>
+            <form action="/delet" method = "POST">
+                <input type="hidden" name = "id" value = "{{_id}}">
+                <button type = "submit" class = "btn btn-danger mt-3">Deletar</button>
+            </form>
+        </div>
+    </div>
+{{else}}
+<br>
+    <h3>Nenhuma nota foi registrada, clique em "notas" para criar uma nova anotação!</h3>
+{{/each}}

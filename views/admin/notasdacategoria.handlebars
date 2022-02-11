@@ -1,0 +1,12 @@
+{{#each notas}}
+    <div class = "card mt-3">
+        <div class = "card-body">
+            <h3>{{titulo}}</h3>
+            <p>{{conteudo}}</p>
+        </div>
+    </div>
+
+{{else}}
+    <h4>Não existem notas com essa categoria</h4>
+
+{{/each}}
