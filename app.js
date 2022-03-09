@@ -97,13 +97,24 @@ app.post("/tag/create/nova", (req, res) => {
     const novaEtiqueta = {
         nome: req.body.nome
     }
-
-    new Etiqueta(novaEtiqueta).save().then(() => {
-        req.flash("success_msg", "etiqueta salva com sucesso!")
-        res.redirect("/")
-    }).catch((err) => {
-        req.flash("error_msg", "erro ao salvar a etiqueta")
-        res.redirect("/")
+    Etiqueta.find().lean().then((etiquetas) => {
+        vetor = ['']
+        etiquetas.forEach((e) => {
+            vetor.push(e.nome)
+        })
+        if (!(vetor.includes(req.body.nome))){
+            new Etiqueta(novaEtiqueta).save().then(() => {
+                req.flash("success_msg", "etiqueta salva com sucesso")
+                res.redirect("/")
+            }).catch((err) => {
+                req.flash("error_msg", "erro ao salvar etiqueta")
+                res.redirect("/")
+            })
+        }
+        else{
+            req.flash("error_msg", "já existe uma etiqueta com esse nome")
+            res.redirect("/")
+        }
     })
 })
 
