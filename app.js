@@ -11,6 +11,8 @@ require("./models/Nota")
 const Nota = mongoose.model("notas")
 require("./models/Categoria")
 const Categoria = mongoose.model("categorias")
+require("./models/Etiqueta")
+const Etiqueta = mongoose.model("etiquetas")
 const db = require("./config/db")
 
 //Configurações
@@ -46,8 +48,9 @@ const db = require("./config/db")
 
 //Rotas
 app.get("/", (req, res) => {
-    Nota.find().lean().sort({data: "desc"}).then((notas) => {
+    Nota.find().lean().populate("etiquetas").sort({data: "desc"}).then((notas) => {
         res.render("admin/index", {notas: notas})
+        //res.status(200).send({notas});
     }).catch((err) => {
         req.flash("error_msg", "houve um erro ao listar as notas")
         res.render("/")
@@ -55,7 +58,12 @@ app.get("/", (req, res) => {
 })
 
 app.get("/create", (req, res) => {
-    res.render("admin/addnota")
+    Etiqueta.find().lean().then((etiquetas) => {
+        res.render("admin/addnota", {etiquetas: etiquetas})
+    }).catch((err) => {
+        req.flash("error_msg", "houve um erro ao carregar o formulário")
+        res.redirect("/")
+    }) 
 })
 
 app.get("/categories", (req, res) => {
@@ -68,12 +76,43 @@ app.get("/categories", (req, res) => {
     })
 })
 
+app.get("/tags", (req, res) => {
+    Etiqueta.find().lean().then((etiquetas) => {
+        res.render("admin/etiquetas", {etiquetas: etiquetas})
+    }).catch((err) => {
+        req.flash("error_msg", "houve um erro ao exibir as etiquetas")
+        res.redirect("/")
+    })
+})
+
+app.get("/tag", (req, res) => {
+    res.render("admin/sei")
+})
+
+app.get("/tag/create", (req, res) => {
+    res.render("admin/addetiqueta")
+})
+
+app.post("/tag/create/nova", (req, res) => {
+    const novaEtiqueta = {
+        nome: req.body.nome
+    }
+
+    new Etiqueta(novaEtiqueta).save().then(() => {
+        req.flash("success_msg", "etiqueta salva com sucesso!")
+        res.redirect("/")
+    }).catch((err) => {
+        req.flash("error_msg", "erro ao salvar a etiqueta")
+        res.redirect("/")
+    })
+})
+
 /*app.get("/tags", (req, res) => {
     res.render("admin/etiquetas")
 })*/
 
 app.post("/create/nova", (req, res) => {
-
+    //res.status(200).send(req.body);
     let erros = []
     if(!req.body.titulo || req.body.titulo == undefined || req.body.titulo == null){
         erros.push({texto: "título inválido"})
@@ -95,7 +134,8 @@ app.post("/create/nova", (req, res) => {
         //faz referencia ao "name" do input em /admin/addnota
         titulo: req.body.titulo,
         categoria: req.body.categoria,
-        conteudo: req.body.conteudo
+        conteudo: req.body.conteudo,
+        etiquetas: req.body.etiquetas
     }
     new Nota(novaNota).save().then(() => {
         req.flash("success_msg", "nota salva com sucesso")
@@ -118,7 +158,7 @@ app.post("/create/nova", (req, res) => {
         })
         
     }).catch((err) => {
-        req.flash("error_msg", "erro ao salvar a nota")
+        req.flash("error_msg", "erro ao salvar a nota " + err)
         res.redirect("/")
     })
 })
@@ -134,7 +174,9 @@ app.get("/:id", (req, res) => {
 app.get("/:id/edit", (req, res) => {
     Nota.findOne({_id: req.params.id}).lean().then((nota) => {
         Categoria.find().lean().then((categorias) => {
-            res.render("admin/editnota", {nota: nota, categorias: categorias})
+            Etiqueta.find().lean().then((etiquetas) =>  {
+                res.render("admin/editnota", {nota: nota, categorias: categorias, etiquetas: etiquetas})
+            })
         })
     }).catch((err) => {
         req.flash("error_msg", "essa nota não existe")
@@ -146,7 +188,8 @@ app.post("/edit", (req, res) => {
     Nota.findOne({_id: req.body.id}).then((nota) => {
         nota.titulo = req.body.titulo,
         nota.categoria = req.body.categoria,
-        nota.conteudo = req.body.conteudo
+        nota.conteudo = req.body.conteudo,
+        nota.etiquetas = req.body.etiquetas
 
         nota.save().then(() => {
             req.flash("success_msg", "Nota editada com sucesso!")
@@ -184,11 +227,36 @@ app.post("/deletcategoria", (req, res) => {
     })
 })
 
+app.post("/delettag", (req, res) => {
+    Etiqueta.deleteOne({_id: req.body.id}).lean().then(() => {
+        req.flash("success_msg", "etiqueta apagada")
+        res.redirect("/")
+    }).catch((err) => {
+        req.flash("error_msg", "Houve um erro ao deletar a nota")
+        res.redirect("/")
+    })
+})
+
 app.get("/categories/:nome", (req, res) => {
     Nota.find({categoria: req.params.nome}).lean().then((notas) => {
-        console.log(req.params.nome)
-        console.log(notas)
-        res.render("admin/notasdacategoria", {notas: notas})
+        Categoria.findOne({nome: req.params.nome}).lean().then((categorias) => {
+            res.render("admin/notasdacategoria", {notas: notas, categorias: categorias})
+        })
+        //console.log(req.params.nome)
+        //console.log(notas)
+    }).catch((err) => {
+        req.flash("error_msg", "erro")
+        res.redirect("/")
+    })
+})
+
+app.get("/tags/:id", (req, res) => {
+    Nota.find({etiquetas: req.params.id}).lean().then((notas) => {
+        Etiqueta.findOne({_id: req.params.id}).lean().then((etiquetas) => {
+            res.render("admin/notasdaetiqueta", {notas: notas, etiquetas: etiquetas})
+        })
+        //console.log(req.params.id)
+        //console.log(notas)
     }).catch((err) => {
         req.flash("error_msg", "erro")
         res.redirect("/")

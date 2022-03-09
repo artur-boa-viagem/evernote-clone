@@ -1,0 +1,15 @@
+<h1>Etiquetas: </h1>
+{{#each etiquetas}}
+    <div class = "card mt-3">
+        <div class = "card-body">
+            <a href="/tags/{{_id}}"><h4>{{nome}}</h4></a>
+            <form action="/delettag" method = "POST">
+                <input type="hidden" name = "id" value = "{{_id}}">
+                <input type="hidden" name = "nome" value = "{{nome}}">
+                <button type = "submit" class = "btn btn-danger mt-3">Deletar</button>
+            </form>
+        </div>
+    </div>
+{{else}}
+    <h3>Nenhuma etiqueta foi criada</h3>
+{{/each}}

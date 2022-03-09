@@ -3,7 +3,41 @@
 {{else}}
 
 {{/each}}
+<style>
+.multiselect {
+  width: 200px;
+}
 
+.selectBox {
+  position: relative;
+}
+
+.selectBox select {
+  width: 100%;
+  font-weight: bold;
+}
+
+.overSelect {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+#checkboxes {
+  display: none;
+  border: 1px #dadada solid;
+}
+
+#checkboxes label {
+  display: block;
+}
+
+#checkboxes label:hover {
+  background-color: #1e90ff;
+}
+</style>
 <h3>Crie uma nota</h3>
 <div class = "card">
     <div class = "card-body">
@@ -14,6 +48,25 @@
         <label for="categoria">Categoria: </label>
         <input type="text" id = "categoria" name = "categoria" placeholder = "categoria da nota" class = "form-control">
         <br>
+        <label for="etiqueta">Etiqueta: </label>
+        <div class = "multiselect">
+            <div class="selectBox" onclick="showCheckboxes()">
+                <select>
+                    <option>Selecione tag(s)</option>
+                </select>
+                <div class="overSelect"></div>
+            </div>
+            <div id = "checkboxes">
+                {{#each etiquetas}}
+                    <label for="{{_id}}">
+                        <input type="checkbox" id = "{{_id}}" name = "etiquetas[]" value = "{{_id}}">{{nome}}
+                    </label>
+                {{else}}
+                    <option value="0">Não há tags</option>
+                {{/each}}
+            </div>
+        </div>
+        <br>
         <label for="conteudo">Conteúdo: </label>
         <textarea name="conteudo" class = "form-control"></textarea>
         <br>
@@ -21,3 +74,17 @@
         </form>
     </div>
 </div>
+<script>
+var expanded = false;
+
+function showCheckboxes() {
+  var checkboxes = document.getElementById("checkboxes");
+  if (!expanded) {
+    checkboxes.style.display = "block";
+    expanded = true;
+  } else {
+    checkboxes.style.display = "none";
+    expanded = false;
+  }
+}
+</script>

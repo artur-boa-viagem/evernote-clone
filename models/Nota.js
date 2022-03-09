@@ -14,6 +14,11 @@ const Nota = new Schema({
         type: String,
         required: true
     },
+    etiquetas: [{
+        type: Schema.Types.ObjectId,
+        ref: "etiquetas",
+        required: false
+    }],
     data: {
         type: Date,
         default: Date.now()
