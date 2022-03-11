@@ -186,6 +186,19 @@ app.get("/:id/edit", (req, res) => {
     Nota.findOne({_id: req.params.id}).lean().then((nota) => {
         Categoria.find().lean().then((categorias) => {
             Etiqueta.find().lean().then((etiquetas) =>  {
+                console.log(nota)
+                console.log(nota.etiquetas)
+                etiquetas.map((e) => {
+                    e.valor = ""
+                    nota.etiquetas.map((f) => {
+                        console.log(f._id.valueOf())
+                        console.log(f._id.valueOf() == e._id.valueOf())
+                        if(f._id.valueOf() == e._id.valueOf()){
+                            e.valor = "checked"
+                        }
+                    })
+                    console.log(e)
+                })               
                 res.render("admin/editnota", {nota: nota, categorias: categorias, etiquetas: etiquetas})
             })
         })

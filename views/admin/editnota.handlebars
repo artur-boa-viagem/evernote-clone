@@ -63,7 +63,7 @@
             <div id = "checkboxes">
                 {{#each etiquetas}}
                     <label for="{{_id}}">
-                        <input type="checkbox" id = "{{_id}}" name = "etiquetas[]" value = "{{_id}}">{{nome}}
+                        <input type="checkbox" id = "{{_id}}" name = "etiquetas[]" value = "{{_id}}" {{valor}}>{{nome}}
                     </label>
                 {{else}}
                     <option value="0">Não há tags</option>
