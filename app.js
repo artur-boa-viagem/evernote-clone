@@ -94,28 +94,37 @@ app.get("/tag/create", (req, res) => {
 })
 
 app.post("/tag/create/nova", (req, res) => {
-    const novaEtiqueta = {
-        nome: req.body.nome
+    let erros = []
+    if (!req.body.nome || req.body.nome == undefined || req.body.nome == null){
+        erros.push({texto: "nome de etiqueta inválido"})
     }
-    Etiqueta.find().lean().then((etiquetas) => {
-        vetor = ['']
-        etiquetas.forEach((e) => {
-            vetor.push(e.nome)
-        })
-        if (!(vetor.includes(req.body.nome))){
-            new Etiqueta(novaEtiqueta).save().then(() => {
-                req.flash("success_msg", "etiqueta salva com sucesso")
-                res.redirect("/")
-            }).catch((err) => {
-                req.flash("error_msg", "erro ao salvar etiqueta")
-                res.redirect("/")
+    if (erros.length > 0){
+        res.render("admin/addetiqueta", {erros: erros})
+    }
+    else{
+        const novaEtiqueta = {
+            nome: req.body.nome
+        }
+        Etiqueta.find().lean().then((etiquetas) => {
+            vetor = ['']
+            etiquetas.forEach((e) => {
+                vetor.push(e.nome)
             })
-        }
-        else{
-            req.flash("error_msg", "já existe uma etiqueta com esse nome")
-            res.redirect("/")
-        }
-    })
+            if (!(vetor.includes(req.body.nome))){
+                new Etiqueta(novaEtiqueta).save().then(() => {
+                    req.flash("success_msg", "etiqueta salva com sucesso")
+                    res.redirect("/")
+                }).catch((err) => {
+                    req.flash("error_msg", "erro ao salvar etiqueta")
+                    res.redirect("/")
+                })
+            }
+            else{
+                req.flash("error_msg", "já existe uma etiqueta com esse nome")
+                res.redirect("/")
+            }
+        })
+    }
 })
 
 /*app.get("/tags", (req, res) => {
@@ -136,42 +145,43 @@ app.post("/create/nova", (req, res) => {
     }
     if (erros.length > 0){
         res.render("admin/addnota", {erros: erros})
-    }
-    const novaCategoria = {
-        nome: req.body.categoria
-    }
-
-    const novaNota = {
-        //faz referencia ao "name" do input em /admin/addnota
-        titulo: req.body.titulo,
-        categoria: req.body.categoria,
-        conteudo: req.body.conteudo,
-        etiquetas: req.body.etiquetas
-    }
-    new Nota(novaNota).save().then(() => {
-        req.flash("success_msg", "nota salva com sucesso")
-        Categoria.find().lean().then((categorias) => {
-            array = ['']
-            categorias.forEach((e) =>{
-                 array.push(e.nome)
-                })
-            if (!(array.includes(req.body.categoria))){
-                new Categoria(novaCategoria).save().then(() => {
+    }else{
+        const novaCategoria = {
+            nome: req.body.categoria
+        }
+    
+        const novaNota = {
+            //faz referencia ao "name" do input em /admin/addnota
+            titulo: req.body.titulo,
+            categoria: req.body.categoria,
+            conteudo: req.body.conteudo,
+            etiquetas: req.body.etiquetas
+        }
+        new Nota(novaNota).save().then(() => {
+            req.flash("success_msg", "nota salva com sucesso")
+            Categoria.find().lean().then((categorias) => {
+                array = ['']
+                categorias.forEach((e) =>{
+                     array.push(e.nome)
+                    })
+                if (!(array.includes(req.body.categoria))){
+                    new Categoria(novaCategoria).save().then(() => {
+                        res.redirect("/")
+                    })
+                }
+                else{
                     res.redirect("/")
-                })
-            }
-            else{
+                }
+            }).catch((err) => {
+                req.flash("error_msg", "houve um erro ao exibir as categorias")
                 res.redirect("/")
-            }
+            })
+            
         }).catch((err) => {
-            req.flash("error_msg", "houve um erro ao exibir as categorias")
+            req.flash("error_msg", "erro ao salvar a nota ")
             res.redirect("/")
         })
-        
-    }).catch((err) => {
-        req.flash("error_msg", "erro ao salvar a nota " + err)
-        res.redirect("/")
-    })
+    }
 })
 app.get("/:id", (req, res) => {
     Nota.findOne({_id: req.params.id}).lean().then((nota) => {
@@ -186,18 +196,18 @@ app.get("/:id/edit", (req, res) => {
     Nota.findOne({_id: req.params.id}).lean().then((nota) => {
         Categoria.find().lean().then((categorias) => {
             Etiqueta.find().lean().then((etiquetas) =>  {
-                console.log(nota)
-                console.log(nota.etiquetas)
+                //console.log(nota)
+                //console.log(nota.etiquetas)
                 etiquetas.map((e) => {
                     e.valor = ""
                     nota.etiquetas.map((f) => {
-                        console.log(f._id.valueOf())
-                        console.log(f._id.valueOf() == e._id.valueOf())
+                        //console.log(f._id.valueOf())
+                        //console.log(f._id.valueOf() == e._id.valueOf())
                         if(f._id.valueOf() == e._id.valueOf()){
                             e.valor = "checked"
                         }
                     })
-                    console.log(e)
+                    //console.log(e)
                 })               
                 res.render("admin/editnota", {nota: nota, categorias: categorias, etiquetas: etiquetas})
             })
@@ -209,23 +219,56 @@ app.get("/:id/edit", (req, res) => {
 })
 
 app.post("/edit", (req, res) => {
-    Nota.findOne({_id: req.body.id}).then((nota) => {
-        nota.titulo = req.body.titulo,
-        nota.categoria = req.body.categoria,
-        nota.conteudo = req.body.conteudo,
-        nota.etiquetas = req.body.etiquetas
-
-        nota.save().then(() => {
-            req.flash("success_msg", "Nota editada com sucesso!")
-            res.redirect("/")
+    
+    let erros = []
+    if (!req.body.titulo || req.body.titulo == undefined || req.body.titulo == null){
+        erros.push({texto: "título inválido"})
+    }
+    if (!req.body.categoria || req.body.categoria == undefined || req.body.categoria == null){
+        erros.push({texto: "categoria inválida"})
+    }
+    if (!req.body.conteudo || req.body.conteudo == undefined || req.body.conteudo == null){
+        erros.push({texto: "conteúdo inválido"})
+    }
+    if (erros.length > 0){
+        Nota.findOne({_id: req.body.id}).lean().then((nota) => {
+            Categoria.find().lean().then((categorias) => {
+                Etiqueta.find().lean().then((etiquetas) => {
+                    etiquetas.map((e) => {
+                        e.valor = ""
+                        nota.etiquetas.map((f) => {
+                            //console.log(f._id.valueOf())
+                            //console.log(f._id.valueOf() == e._id.valueOf())
+                            if(f._id.valueOf() == e._id.valueOf()){
+                                e.valor = "checked"
+                            }
+                        })
+                        //console.log(e)
+                    })
+                    res.render("admin/editnota", {erros: erros, nota: nota, categorias: categorias, etiquetas: etiquetas})
+                })
+            })
+        })
+    }
+    else {
+        Nota.findOne({_id: req.body.id}).then((nota) => {
+            nota.titulo = req.body.titulo,
+            nota.categoria = req.body.categoria,
+            nota.conteudo = req.body.conteudo,
+            nota.etiquetas = req.body.etiquetas
+    
+            nota.save().then(() => {
+                req.flash("success_msg", "Nota editada com sucesso!")
+                res.redirect("/")
+            }).catch((err) => {
+                req.flash("error_msg", "Houve um erro interno ao salvar a edição")
+                res.redirect("/")
+            })
         }).catch((err) => {
-            req.flash("error_msg", "Houve um erro interno ao salvar a edição")
+            req.flash("error_msg", "Houve um erro ao editar a nota")
             res.redirect("/")
         })
-    }).catch((err) => {
-        req.flash("error_msg", "Houve um erro ao editar a nota")
-        res.redirect("/")
-    })
+    }
 })
 
 app.post("/delet", (req, res) => {
@@ -240,7 +283,7 @@ app.post("/delet", (req, res) => {
 
 app.post("/deletcategoria", (req, res) => {
     Categoria.deleteOne({_id: req.body.id}).lean().then(() => {
-        console.log(req.body.nome)
+        //console.log(req.body.nome)
         Nota.deleteMany({categoria: req.body.nome}).lean().then(() => {
             req.flash("success_msg", "Nota deletada com sucesso")
             res.redirect("/")
