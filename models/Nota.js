@@ -7,7 +7,8 @@ const Nota = new Schema({
         required: true
     },
     categoria: {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: "categorias",
         required: true
     },
     conteudo: {

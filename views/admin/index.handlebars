@@ -6,16 +6,17 @@
 {{#each notas}}
     <div class = "card mt-4">
         <div class = "card-body">
+            
             <h4>{{titulo}}</h4>
             <hr>
-            <small>Categoria: {{categoria}}</small>
+            Categorias:
+            {{categoria.nome}}
             <br>
             <small>Data: {{data}}</small>
             <br>
             Etiquetas:
             {{#each etiquetas}}
-                <a href="/tags/{{_id}}">"{{nome}}"</a>
-                  
+                <a href="/tags/{{_id}}">"{{nome}}"</a>  
             {{else}}
                 Nenhuma etiqueta associada
             {{/each}}

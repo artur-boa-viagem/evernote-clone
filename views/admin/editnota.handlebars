@@ -49,9 +49,9 @@
         <label for="categoria">Categoria: </label>
         <select name="categoria">
             {{#each categorias}}
-            <option value="{{nome}}">{{nome}}</option>
-            {{else}}
-            <option value="0">Nenhuma categoria registrada</option>
+              <option value="{{_id}}" {{sel}}>{{nome}}</option>
+              {{else}}
+              <option value="0">Nenhuma categoria registrada</option>
 
             {{/each}}
         </select>

@@ -47,8 +47,14 @@
         <label for="titulo">*Título: </label>
         <input type="text" id ="titulo" name = "titulo" placeholder = "título da nota" class = "form-control">
         <br>
-        <label for="categoria">*Categoria: </label>
-        <input type="text" id = "categoria" name = "categoria" placeholder = "categoria da nota" class = "form-control">
+        <label for="categoria">Categoria: </label>
+        <select name="categoria">
+            {{#each categorias}}
+              <option value="{{_id}}">{{nome}}</option>
+            {{else}}
+              <option value="0">Nenhuma categoria registrada</option>
+            {{/each}}
+        </select>
         <br>
         <label for="etiqueta">Etiqueta: </label>
         <div class = "multiselect">

@@ -1,12 +1,15 @@
-<div class = "card">
-    <div class = "card-body">
-        <h3>{{nota.titulo}}</h3>
-        <small>categoria: {{nota.categoria}}</small>
-        <hr>
-        <br>
-        <p>{{nota.conteudo}}</p>
-        <br>
-        <hr>
-        <small>Data: {{nota.data}}</small>
+{{#each nota}}
+    <div class = "card">
+        <div class = "card-body">
+            <h3>{{titulo}}</h3>
+            <small>categoria: {{categoria.nome}}</small>
+            <hr>
+            <br>
+            <p>{{conteudo}}</p>
+            <br>
+            <hr>
+            <small>Data: {{data}}</small>
+        </div>
     </div>
-</div>
+{{else}}
+{{/each}}
