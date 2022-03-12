@@ -284,13 +284,15 @@ app.post("/edit", (req, res) => {
                 Etiqueta.find().lean().then((etiquetas) => {
                     etiquetas.map((e) => {
                         e.valor = ""
-                        nota.etiquetas.map((f) => {
-                            //console.log(f._id.valueOf())
-                            //console.log(f._id.valueOf() == e._id.valueOf())
-                            if(f._id.valueOf() == e._id.valueOf()){
-                                e.valor = "checked"
-                            }
-                        })
+                        if (nota.etiquetas){
+                            nota.etiquetas.map((f) => {
+                                //console.log(f._id.valueOf())
+                                //console.log(f._id.valueOf() == e._id.valueOf())
+                                if(f._id.valueOf() == e._id.valueOf()){
+                                    e.valor = "checked"
+                                }
+                            })
+                        }
                         //console.log(e)
                     })
                     categorias.map((c) => {
