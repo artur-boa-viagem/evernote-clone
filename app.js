@@ -124,7 +124,7 @@ app.get("/categories", (req, res) => {
 app.get("/tags", (req, res) => {
     Etiqueta.find().lean().then((etiquetas) => {
         res.render("admin/etiquetas", {etiquetas: etiquetas})
-        console.log("ue")
+        //console.log("ue")
     }).catch((err) => {
         console.log("hmmmmmmmmmmmm")
         //console.log(err)
@@ -222,7 +222,7 @@ app.post("/create/nova", (req, res) => {
 app.get("/:id", (req, res) => {
     //console.log(req.params.id)
     Nota.find({_id: req.params.id}).populate("categoria").lean().then((nota) => {
-        console.log(nota)
+        //console.log(nota)
         res.render("admin/nota", {nota: nota})
     }).catch((err) => {
         //console.log(err)
@@ -236,7 +236,7 @@ app.get("/:id/edit", (req, res) => {
         Categoria.find().lean().then((categorias) => {
             Etiqueta.find().lean().then((etiquetas) =>  {
                 //console.log(nota)
-                console.log(nota.etiquetas)
+                //console.log(nota.etiquetas)
                 etiquetas.map((e) => {
                     e.valor = ""
                     if (nota.etiquetas){
@@ -309,7 +309,7 @@ app.post("/edit", (req, res) => {
     }
     else {
         Nota.findOne({_id: req.body.id}).then((nota) => {
-            console.log(nota)
+            //console.log(nota)
             nota.titulo = req.body.titulo
             nota.categoria = req.body.categoria
             nota.conteudo = req.body.conteudo
@@ -342,7 +342,7 @@ app.post("/delet", (req, res) => {
 
 app.post("/deletcategoria", (req, res) => {
     Categoria.deleteOne({_id: req.body.id}).lean().then(() => {
-        console.log(req.body.id)
+        //console.log(req.body.id)
         Nota.deleteMany({categoria: req.body.id}).lean().then(() => {
             req.flash("success_msg", "Nota deletada com sucesso")
             res.redirect("/")
@@ -364,7 +364,7 @@ app.post("/delettag", (req, res) => {
 })
 
 app.get("/categories/:id", (req, res) => {
-    console.log(req.params.id)
+    //console.log(req.params.id)
     Categoria.findOne({nome: req.params.id}).lean().then((categoria) => {
         if (categoria){
             Nota.find({categoria: categoria._id}).lean().then((notas) => {

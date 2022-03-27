@@ -12,14 +12,18 @@
             Categorias:
             {{categoria.nome}}
             <br>
-            <small>Data: {{createdAt}}</small>
-            <br>
             Etiquetas:
             {{#each etiquetas}}
                 <a href="/tags/{{_id}}">"{{nome}}"</a>  
             {{else}}
                 Nenhuma etiqueta associada
             {{/each}}
+            <br>
+            <br>
+            <hr>
+            <small>Data de criação: {{createdAt}}</small>
+            <br>
+            <small>Última vez atualizado: {{updatedAt}}</small>
             <br>
             <a href="/{{_id}}"><button class = "btn btn-success mt-3">Visualizar nota</button></a>
             <a href="/{{_id}}/edit"><button class = "btn btn-success mt-3">Editar nota</button></a>
