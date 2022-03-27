@@ -48,7 +48,7 @@ const db = require("./config/db")
 
 //Rotas
 app.get("/", (req, res) => {
-    Nota.find().lean().populate("etiquetas").populate("categoria").sort({data: "desc"}).then((notas) => {
+    Nota.find().lean().populate("etiquetas").populate("categoria").sort({createdAt: "desc"}).then((notas) => {
         res.render("admin/index", {notas: notas})
         //res.status(200).send({notas});
     }).catch((err) => {
